@@ -199,8 +199,10 @@ int main(){
 }
 ```
 可以发现，虽然data是const声明的，但是还是能够通过mutable修改其中的值
-#### 强制类型转换
-开发者可以很轻松地通过const_cast 来将一个const指针改成一个可以被变更的指针，如下面的代码
+## 变量类型转换
+要明确的一点是，相较于C++中各种隐式转换规则，rust中几乎会拒绝所有的隐式类型转换，所以可以认为rust中只存在显示的强制类型转换。
+### 变量可变性转换
+C++开发者可以很轻松地通过const_cast 来将一个const指针改成一个可以被变更的指针，如下面的代码
 ```c++
 int a = 10; 
 const int* p = &a; 
@@ -223,6 +225,26 @@ int* ptr = const_cast<int*>(p);
 ![](assets/Pasted%20image%2020260114220119.png)
 可以发现，p指针确实修改了a地址的内存，打印出来的a的值却没变，这是因为编译器看到这是一个const变量，就认为其值不可能更改，所以在要输出a的值时就直接将a寄存器中a原来的值直接填进去了，而没有读内存，但是p也的确修改了a地址所存储的值。
 而这在rust中，只有unsafe才能够实现
+### 基础类型强制类型转换
+在rust中我们可以利用as语句实现基础类型的转换，比如i32转成usize
+```rust
+let val : i32 = 12;
+let array: Vec<i32> = vec![1,2,3,4]
+for window in array.windows(val as usize){ //windows函数的传入参数类型是usize,必须将i32
+										   //强制转化成usize才不会编译报错
+	...
+}
+```
+其中 
+```rust
+val as usize
+```
+相当于
+```C++
+int32_t val = 12;
+(unsigned int) val
+```
+
 ## 输入
 ```rust
 std::io::stdin().read_line(&mut guess).expect("Failed to read line");
