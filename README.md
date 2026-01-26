@@ -1,32 +1,10 @@
-# 🛡️ C++ to Rust: The Oxidization Journey
+# Rust from C/C++: The Oxidization Journey
+## 这是什么
+这是一个正在编写的通过对比rust和C/C++来学习rust的中文笔记代码仓库。
 
-> **Motivation**
->
-> As a C++ developer, I found that most existing Rust tutorials act as introduction to programming, rather than a migration guide for systems programmers. They explain *what* a pointer is, not *how* Rust's references differ from C++ pointers.
->
-> **There wasn't a fast-track guide for C++ developers, so I decided to write one as I learn.**
+众所周知，rust 经常因为其陡峭的学习曲线而为人所诟病。作为一个以C/C++为主力开发语言的开发者，我觉得学习rust最好的方式就是将C/C++与rust代码进行对比来降低这个学习曲线，因此你在笔记中会看到大量包括实现同一功能的rust代码和C/C++代码的代码对比以及rust与C/C++一些特性间的对比，比如rust中的借用和C/C++中的二级指针。
 
-## 📚 What is this?
-This repository documents my transition from C++ to Rust, focusing on:
-* Mapping C++ concepts (RAII, Pointers, CMake) to Rust (Ownership, References, Cargo/Bazel).
-* Implementing systems programming tasks using Tree-sitter and low-level APIs.
-* Avoiding common pitfalls when unlearning C++ habits.
+如果你也跟我一样是以C/C++为主力语言的开发者，相信你看了笔记之后一定能有所收获。
 
-
-
-
-
-| C++  | C++ Example                   | Rust | Rust Example    | Description     | Note                                |
-| ---- | ----------------------------- | ---- | --------------- | --------------- | ----------------------------------- |
-| ::   | xxxxxxxxxx let mut a = 10;sql | ::   | std::io::stdout | Almost the same | [namespace.md](./Note/namespace.md) |
-|      |                               |      |                 |                 |                                     |
-|      |                               |      |                 |                 |                                     |
-
-
-
-| **场景**              | **C++ 写法**                    | **Rust 写法**     | **备注**                                |
-| --------------------- | ------------------------------- | ----------------- | --------------------------------------- |
-| **访问命名空间/模块** | `std::cout`                     | `std::io::stdin`  | 几乎一模一样                            |
-| **访问静态方法**      | `MyClass::create()`             | `MyStruct::new()` | 都是用于“类/结构体”级别的调用           |
-| **访问枚举值**        | `Color::Red` (C++11 enum class) | `Color::Red`      | 一模一样                                |
-| **访问实例方法**      | `obj.method()`                  | `obj.method()`    | **注意**：实例方法都用点 `.`，不用 `::` |
+同时如果这篇笔记帮到了你的话，请给这个项目留个星(人´∀`)谢谢~
+## 目录结构
