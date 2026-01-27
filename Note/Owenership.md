@@ -1,3 +1,68 @@
+# 所有权
+在rust，中所谓的所有权，全称应该为分配在堆内存上的变量的所有权，其有3条规则：
+1. 每个值都有一个变量，称为其 **owner**
+2. 任意时刻，一个段被分配的内存只能有一个 **owner**。
+3. 当 owner 离开作用域，这个值将被 **dropped**。
+
+这三条规则看着可能比较难记，但如果将其看成**对于rust中所有分配在堆内存上的变量，rust都采用类似于C++中std::move的方式来处理函数传参以及赋值等时候的内存分配，且同一作用域下一段被分配的内存只能为一个变量所有**，就会好理解很多。
+对于赋值操作，下面的rust代码和C++代码可以进行对比
+```rust
+fn main(){
+    let book1: String = String::from("Yello book");
+    let book2: String = book1;
+    println!("{}",book2)
+    // println!("{}",book1) //会编译报错，因为book1的所有权已经转移给book2了
+}
+```
+相当于C++中的
+```C++
+int main() {
+    std::string book1 = "Yello book";
+	std::string book2 = std::move(book1);
+	std::cout << book2 << std::endl;
+	std::cout << book1 << std::endl; //不会报错，因为即使内存被转给了book2，book1仍能被访
+                                     //问，只是指向的内存的内容未知，访问这块内存为未定义
+                                     //的危险行为
+}
+```
+之所以rust代码中打印book1变量会报错，从根本上是因为book1对于指向"Yello book"这块内存的所有权已经std::move转移给了book2，且book1与book2都处于同一块作用域(指fn main(){}这个大括号括住的作用域)，所以book1就会失效，再想访问book1所指向的内存，就会报错，而因为在C++中即使变量被std::move了也可以继续访存，所以并不会报错。
+
+同样的对于函数传参，也有相似的规律
+```rust
+fn take_book(input : String){
+    println!("{}", input)
+}
+fn main(){
+    let book1: String = "Yello book".to_string();
+    take_book(book1);
+    // println!("{}",book1) //会报错，因为book1的所有权给了take_book的函数参数变量input
+}
+```
+而其等价的C++实现如下:
+```C++
+void take_book(const std::string input){
+    std::cout << input << std::endl;
+}
+
+int main() {
+    std::string book1 = "Yello book";
+    take_book(std::move(book1));
+    std::cout << book1 << std::endl; //不会报错，但因访问未知内存为未定义行为
+}
+```
+而有些人可能会产生一个问题，**book1和take_book的函数参数作用域也不同，并不满足之前提到的rust对于所有权规则中定义的第二条即*2. 任意时刻，一个段被分配的内存只能有一个 owner。* 但为什么在执行完take_book函数后还是不能访问book1的内存呢？**
+
+这需要深入take_book传入book1后的整个流程，当调用*take_book(book1);* 时, rust会
+1. **建立新的栈帧**: 为take_book函数开辟一块新空间
+2. **位拷贝**:把book1在栈上的三个字段(ptr, len, cap)复制到take_book的参数变量input的位置
+3. **所有权变更**:编译器认定现在这块内存归input关了，给book1打上Moved的标签
+4. **函数执行，直至执行结束**
+5. **Drop input**: 编译器插入代码，释放input指向的堆内存
+6. **弹出栈帧**: take_book的栈空间被回收
+7. **回到main继续执行**: book1还是有Moved的标签
+8. **执行book1的println!打印**:编译器发现book1有Moved的标签，代表其原有内存已经被别的变量拿走了，还没分配新的给他，所以报错。
+这也是为什么虽然book1和take_book函数的传入参数input不在同一个作用域但仍会报错的原因，因为book1的内存所有权已经转移给input了。
+
 # 引用
 之前也提到过，rust中的引用与其说是“引用”，其概念上更像是C/C++中的二级指针（即\*\*ptr）
 如rust book中画的下面这张图所示
@@ -19,6 +84,7 @@ rust对于引用的三项规则确保了rust即使没有互斥锁的保护，rus
 ## 悬垂引用
 rust中也不可能存在悬垂引用，rust中使用了生命周期这一特性去确保这一特性，一个引用的生命周期一定小于等于其指向变量的生命周期，如果其指向变量的生命结束时，则其引用生命必然结束，后面再使用引用必然会报错。
 # 切片
+
 rust中的切片在概念上实际上类似于**C/C++中的指针**，只是这个指针拥有长度，规定了指针的起始。在字符串处理上，相比C用'\0'去标明一个字符串的结尾，一方面避免了'\0'被错误覆盖时导致的访问越界内存问题，另一方面省下了计算字符串长度（strlen）的开销。
 同时切片在rust中本质上是一个**指向原始数据里特定位置的引用**，利用这一特性，rust很轻松的实现了避免切片在原始数据内存被回收时没有被及时回收导致切片指向一块未定义内存区域的机制，如下面的这段代码
 ```rust
