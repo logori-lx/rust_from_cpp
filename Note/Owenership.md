@@ -64,10 +64,64 @@ int main() {
 这也是为什么虽然book1和take_book函数的传入参数input不在同一个作用域但仍会报错的原因，因为book1的内存所有权已经转移给input了。
 
 # 引用
-之前也提到过，rust中的引用与其说是“引用”，其概念上更像是C/C++中的二级指针（即\*\*ptr）
-如rust book中画的下面这张图所示
+之前也提到过，rust中的引用与其说是“引用”，其概念上更像是C/C++中的指针，而想要理解rust中有关引用的代码也很容易。我们都知道，在C++中我们对一个变量是通过&(取址运算符)实现对一个变量的内存取址的，同时在C++中我们想声明一个变量是指针，我们需要使用\*， 而在rust中者两个功能我们都可以通过&运算符实现，但对于rust中的解引用操作，还是会跟C++一样用
+\* 符号实现。比如:
+rust中声明一个函数传入变量的是引用，代码像这样
+```rust
+fn backtrace(candidates: &i32){ //用&声明这是一个指针
+	let val = *candidates + 1;  // 用*访问内存取出对应的值
+	...
+}
+let candidates = 0;
+backtrace(&candidates);  //用&声明传入的变量是一个引用
+```
+相当于
+```c++
+void backtrace(const int32_t *candidates){ 
+	int32_t val = *candidates + 1;
+	...
+}
+const int32_t candidates = 0;
+backtrace(&candidates); 
+```
+不过将rust中的引用用法也有两点跟C++中的指针不一样的地方， 比如对于rust中的引用来说，其值不能为空，而C++中的指针允许为空(nullptr)， 另外， rust中的引用用的是 **\.** 来访问引用的成员变量或方法，而C++中的指针则是用的是 **\-\>** 来访问一个指针的成员或方法，如下面的代码
+```rust
+    struct Mystruct{
+        username: String,
+        active: bool,
+    }
+    let mut mystruct : Mystruct = Mystruct{username: String::from("Bob"), active: true};
+    let ptr: &mut Mystruct = &mut mystruct;
+    ptr.active = false;
+```
+对应C++中的
+```c++
+	typedef struct{
+        std::string username;
+        bool active;
+    } Mystruct;
+    Mystruct mystruct = Mystruct{
+        username: "Bob",
+        active: true,
+    };
+    Mystruct *ptr = &mystruct;
+    ptr->active =false;
+```
+然后我们就可以有下面这张总结对比表
+
+| 操作场景         | C++指针(比如int \*) | C++引用(比如int &) | rust 引用(比如&i32) | 结论            |
+| ------------ | --------------- | -------------- | --------------- | ------------- |
+| 解引用（访问内存的内容) | \*ptr           | ptr(编译器隐藏)     | &ptr            | rust 更像C++指针  |
+| 变量声明         | \*ptr           | &ptr           | &ptr            | rust更像C++中的引用 |
+| 取址(获取内存地址)   | &val            | val(编译器隐藏)     | &val            | rust 更像C++指针  |
+| 判空           | 可以nullptr       | 不可以为空          | 不可以为空           | rust更像C++中的引用 |
+| 访问成员         | val->member     | val.member     | val.member      | rust更像C++中的引用 |
+
+
+其实实话说rust book中下面的这张图是有点误导人的，因为这张图我一度认为rust中的引用应该算是C/C++中的二级指针，但实际上并不是这个意思。
 ![](assets/Pasted%20image%2020260120131104.png)
-可以看到s是变量s1的引用，但在rust中其角色，更像是C/C++中的二级指针，对一个变量创建引用的行为被称为是**借用**。而既然是二级指针，那就很好理解为什么对一个变量进行借用，并不影响其所有权(Ownership)了，因为我们并不能通过修改二级指针的方式实现对一级指针所指向的内容进行修改，自然也谈不上对变量拥有所有权。
+
+这张图之所以看着这么像二级指针，是因为s这个引用指向的s1为string, 其在rust中的实现是以上图中的一个包含指向堆内存的指针和内存长度的结构体来实现的，所以这也是为啥这张图中s看着这么像二级指针。
 ## 可变与不可变引用
 rust为了避免**数据竞争**，对引用的定义有如下规则，这些规则确保了rust在通过编译后，没有数据竞争的代码
 对于同一变量:
