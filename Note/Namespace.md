@@ -71,9 +71,7 @@ namespace helper_function{
 
 
 #### B. 静态方法 (Associated Functions)
-
 在 C++ 中，你叫它 **Static Method**。 在 Rust 中，你叫它 **关联函数 (Associated Function)**。
-
 Rust
 
 ```
@@ -130,11 +128,6 @@ let v = Vec::<i32>::new(); // ✅ 通过 ::<i32> 告诉它是存整数的
 - `Option::Some` -> `Some` 变体 **属于** `Option` 枚举。
 
 除了 **Turbofish (`::<T>`)** 这个怪胎和 **实例方法必须用点 (`.`)** 之外，其他的用法和 C++ 几乎完全一致。
-
-
-
-
-
 
 
 你的直觉非常敏锐。在 90% 的场景下，Rust 的 `use` 和 C++ 的 `using` 就是同一个东西：**把长路径变短，引入当前作用域。**

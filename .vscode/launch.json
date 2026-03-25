@@ -1,13 +1,45 @@
 {
     "version": "0.2.0",
     "configurations": [
+        // ===================================
+        // 1. Rust 配置 (保留你原来的)
+        // ===================================
+        // {
+        //     "name": "Debug Rust",
+        //     "type": "lldb",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/code/leetcode/leetcode_1/rust/target/debug/rust.exe",
+        //     "args": [],
+        //     "cwd": "${workspaceFolder}/code/leetcode/leetcode_1/rust",
+        //     "sourceLanguages": ["rust"]
+        // },
+
+        // ===================================
+        // 2. C++ 配置 (如果你用 MinGW/GDB)
+        // 适用于: g++.exe 编译出来的程序
+        // ===================================
         {
-            "name": "Debug Rust",
-            "type": "lldb",
+            "name": "Debug C++ (GDB/MinGW)",
+            "type": "cppdbg", 
             "request": "launch",
-            "program": "${workspaceFolder}/code/leetcode/leetcode_1/rust/target/debug/rust.exe", 
+            // 自动识别当前打开的 C++ 文件对应的 exe
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/code/leetcode/leetcode_1/rust"
-        }
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe", // 确保 gdb 在你的环境变量 Path 中，否则要写绝对路径
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // 这是一个预加载任务，需要你在 tasks.json 里配置过 C++ 的编译任务
+            // "preLaunchTask": "C/C++: g++.exe 生成活动文件" 
+        },
     ]
 }

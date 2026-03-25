@@ -1,3 +1,21 @@
+# basic concept
+## 变量定义
+定义一个n维且初始值皆为inf的vector
+```rust
+let val : Vec<Vec<i32>> = vec![vec![inf; n]; n]//分号前的是容量，分号后的是初始值
+```
+相当于
+```C++
+vector<vector<int>> val(n, vector<int>(n, inf));
+```
+## 获取长度
+```rust
+let len:i32 = val.len();
+```
+相当于
+```c++
+int len = val.size();
+```
 # 排序
 ## 升序排序
 ### 稳定排序sort()
