@@ -22,3 +22,6 @@
 - [命名空间 (Namespace)](./Note/Namespace.md)
 - [所有权 (Ownership)](./Note/Owenership.md)
 - [向量 / 动态数组 (Vec)](./Note/Vec.md)
+- [属性(Attribute)](./Note/Attribute.md)
+- [枚举(Option)](./Note/Option.md)
+- [字符串(String)](./Note/String.md)
