@@ -32,6 +32,7 @@ cargo run （--release）
 ``````bash
 cargo init
 ``````
+
 ### 编译
 如果在cargo.toml中增加了dependencies的库，在编译时，与C/C++类似cargo会下载对应的库并且将其编译，并且在已经编译完毕且没有代码和新增dependencies的情况下，再次调用cargo编译会不做任何事情，直接退出。
 
